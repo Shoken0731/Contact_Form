@@ -4,7 +4,6 @@
     <title>アンケートフォーム</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script> <!-- LIFF SDKの追加 -->
     <style>
-        /* 既存のスタイルはそのまま */
         body { background-color: #ffffe0; }
         .form-section { margin-bottom: 20px; }
         label, input, select, textarea {
@@ -16,8 +15,7 @@
     </style>
 </head>
 <body>
-    <form id="survey-form" enctype="multipart/form-data">
-        <!-- フォーム内容は変更なし -->
+    <form id="survey-form" enctype="multipart/form-data" onsubmit="return handleFormSubmit(this)">
         <div class="form-section">
             <h2>投稿内容１</h2>
             <label for="category1">カテゴリー:</label>
@@ -37,26 +35,36 @@
     </form>
 
     <script>
-      window.onload = function() {
-        liff.init({ liffId: "2002419122-9vb67yoY" }) // LIFF IDを設定
-          .then(() => {
-            if (!liff.isLoggedIn()) {
-              liff.login(); // LIFFが未ログインの場合はログイン処理を行う
-            }
-          })
-          .catch((err) => {
-            console.log(err.code, err.message);
-          });
-
-        document.getElementById('survey-form').addEventListener('submit', (e) => {
-          e.preventDefault(); // フォームの標準送信を防止
-          handleFormSubmit();
+      // LIFFの初期化
+      liff.init({ liffId: "2002419122-9vb67yoY" }) // LIFF IDを設定
+        .then(() => {
+          if (!liff.isLoggedIn()) {
+            liff.login(); // ログインしていなければログインを要求
+          }
+        })
+        .catch((err) => {
+          console.error('LIFF Initialization failed', err);
         });
-      };
 
-      function handleFormSubmit() {
-        // ここにフォーム送信処理を書く
+      function handleFormSubmit(formElement) {
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onFailure)
+          .processForm(formElement);
+
+        return false; // フォームの標準送信を防止
       }
+
+      function onFailure(error) {
+        console.error("Error:", error);
+        alert("エラーが発生しました。");
+      }
+
+      function onSuccess(html) {
+        document.open();
+         document.write(html);
+         document.close();
+     }
     </script>
 </body>
 </html>
