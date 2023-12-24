@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>アンケートフォーム</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script> <!-- LIFF SDKの追加 -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         body { background-color: #ffffe0; }
         .form-section { margin-bottom: 20px; }
@@ -12,6 +12,7 @@
         }
         textarea { width: 100%; height: 100px; }
         input[type="submit"] { margin-top: 20px; }
+        #survey-form { display: none; } /* 初期状態は非表示 */
     </style>
 </head>
 <body>
@@ -36,10 +37,12 @@
 
     <script>
       // LIFFの初期化
-      liff.init({ liffId: "2002419122-9vb67yoY" }) // LIFF IDを設定
+      liff.init({ liffId: "2002419122-9vb67yoY" })
         .then(() => {
           if (!liff.isLoggedIn()) {
             liff.login(); // ログインしていなければログインを要求
+          } else {
+            document.getElementById('survey-form').style.display = 'block'; // ログイン後にフォームを表示
           }
         })
         .catch((err) => {
@@ -47,6 +50,8 @@
         });
 
       function handleFormSubmit(formElement) {
+        // フォーム送信の処理
+        // google.script.run の部分は適宜変更してください
         google.script.run
           .withSuccessHandler(onSuccess)
           .withFailureHandler(onFailure)
@@ -62,9 +67,9 @@
 
       function onSuccess(html) {
         document.open();
-         document.write(html);
-         document.close();
-     }
+        document.write(html);
+        document.close();
+      }
     </script>
 </body>
 </html>
